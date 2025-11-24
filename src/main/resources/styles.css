@@ -1,0 +1,17 @@
+/* Estilo que se aplicará cuando el campo esté vacío o en error */
+.campo-error {
+    -fx-border-color: #FF0000;
+    -fx-border-width: 2px;
+    -fx-background-color: #ffeaea;
+    -fx-font-size: 14px;
+    -fx-background-radius: 22;
+}
+
+/* Define un estilo normal para poder resetear */
+.text-field {
+    -fx-border-color: #D3D3D3; /* Color de borde normal */
+    -fx-border-width: 1px;
+    -fx-background-color: WHITE;
+    -fx-font-size: 14px;
+    -fx-background-radius: 22;
+}

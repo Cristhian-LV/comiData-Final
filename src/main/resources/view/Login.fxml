@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="root-vbox"
+      fx:controller="pe.edu.upeu.comidata.controllers.LoginController">
+    <padding>
+        <Insets bottom="25.0"
+                left="50.0"
+                right="50.0"
+                top="100.0"/>
+    </padding>
+    <ImageView fx:id="imgLogoLogin"
+               fitWidth="250"
+               preserveRatio="true">
+        <image>
+            <Image url="@../img/logo_comidata_white.png"/>
+        </image>
+    </ImageView>
+
+    <Label text="Iniciar Sesión"
+           textFill="#FF885C">
+        <font>
+            <Font name="System Bold"
+                  size="24.0"/>
+        </font>
+        <VBox.margin>
+            <Insets top="100"
+                    bottom="20.0"/>
+        </VBox.margin>
+    </Label>
+
+    <Label prefWidth="275"
+           text="Correo o usuario:"
+           textFill="#808080"
+           style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    <TextField fx:id="txtCorreoLogin"
+               prefHeight="43"
+               prefWidth="300"
+               promptText="correo@.com"
+               text="anam"
+               style="-fx-font-size: 14px; -fx-background-radius: 22;">
+        <padding>
+            <Insets left="15.0"
+                    right="15.0"/>
+        </padding>
+    </TextField>
+    <Label fx:id="lblCorreoLogin"
+           alignment="TOP_RIGHT"
+           prefWidth="275"
+           textFill="RED"
+           text="Ingresa un correo o usuario válido"
+           visible="false"/>
+
+    <Label prefWidth="275"
+           text="Contraseña:"
+           textFill="#808080"
+           style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    <PasswordField fx:id="txtPasswordLogin"
+                   prefHeight="43"
+                   prefWidth="300"
+                   promptText="Contraseña"
+                   text="clave123"
+                   style="-fx-font-size: 14px; -fx-background-radius: 22;">
+        <padding>
+            <Insets left="15.0"
+                    right="15.0"/>
+        </padding>
+    </PasswordField>
+    <Label fx:id="lblPasswordLogin"
+           alignment="TOP_RIGHT"
+           prefWidth="275"
+           textFill="RED"
+           text="Ingresa una contraseña válida"
+           visible="false"/>
+
+    <Label fx:id="lblErrorLogin"
+           alignment="CENTER"
+           prefWidth="275"
+           textFill="RED"
+           text="Correo o contraseña incorrectos"
+           visible="false"/>
+
+    <Button fx:id="btnLogin"
+            prefHeight="40.0"
+            prefWidth="200.0"
+            style="-fx-font-size: 16px; -fx-background-color: #FF885C; -fx-text-fill: white; -fx-background-radius: 20;"
+            text="Login">
+        <VBox.margin>
+            <Insets bottom="10.0"
+                    top="20.0"/>
+        </VBox.margin>
+    </Button>
+
+    <Label fx:id="lblRegister"
+            style="-fx-font-size: 14px;"
+            text="Registrarse"/>
+
+</VBox>
