@@ -25,7 +25,8 @@
         </image>
     </ImageView>
 
-    <Label text="Iniciar Sesión"
+    <Label fx:id="lblTituloLogin"
+           text="Iniciar Sesión"
            textFill="#FF885C">
         <font>
             <Font name="System Bold"
@@ -37,7 +38,8 @@
         </VBox.margin>
     </Label>
 
-    <Label prefWidth="275"
+    <Label fx:id="lblCorreoLogin"
+           prefWidth="275"
            text="Correo o usuario:"
            textFill="#808080"
            style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
@@ -52,14 +54,15 @@
                     right="15.0"/>
         </padding>
     </TextField>
-    <Label fx:id="lblCorreoLogin"
+    <Label fx:id="lblCorreoVacioLogin"
            alignment="TOP_RIGHT"
            prefWidth="275"
            textFill="RED"
            text="Ingresa un correo o usuario válido"
            visible="false"/>
 
-    <Label prefWidth="275"
+    <Label fx:id="lblPasswordLogin"
+           prefWidth="275"
            text="Contraseña:"
            textFill="#808080"
            style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
@@ -74,7 +77,7 @@
                     right="15.0"/>
         </padding>
     </PasswordField>
-    <Label fx:id="lblPasswordLogin"
+    <Label fx:id="lblPasswordVacioLogin"
            alignment="TOP_RIGHT"
            prefWidth="275"
            textFill="RED"

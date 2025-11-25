@@ -1,6 +1,5 @@
 package pe.edu.upeu.comidata.controllers;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,7 +22,7 @@ import pe.edu.upeu.comidata.utils.Constantes;
 import pe.edu.upeu.comidata.utils.InterfaceManager;
 
 import java.io.IOException;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 @Controller
 public class LoginController {
@@ -33,10 +32,13 @@ public class LoginController {
     @Autowired private ConfigurableApplicationContext applicationContext;
     @Autowired private InterfaceManager interfaceManager;
 
-    @FXML private TextField txtCorreoLogin;
-    @FXML private PasswordField txtPasswordLogin;
+    @FXML private Label lblTituloLogin;
     @FXML private Label lblCorreoLogin;
     @FXML private Label lblPasswordLogin;
+    @FXML private TextField txtCorreoLogin;
+    @FXML private PasswordField txtPasswordLogin;
+    @FXML private Label lblCorreoVacioLogin;
+    @FXML private Label lblPasswordVacioLogin;
     @FXML private Label lblErrorLogin;
     @FXML private Button btnLogin;
     @FXML private Label lblRegister;
@@ -48,6 +50,8 @@ public class LoginController {
 
         btnLogin.setOnAction(e -> entrarSistema());
         lblRegister.setOnMouseClicked(e -> registrarUsuario());
+
+        actualizarInterfazLogin();
     }
 
     public void aplicarLogoTema() {
@@ -66,7 +70,6 @@ public class LoginController {
         if (!validarCampos(user, pass)) {
             return;
         }
-        // Llamar al servicio de login
         PersonalDB personal = personalService.login(user, pass);
 
         if (personal == null){
@@ -81,12 +84,6 @@ public class LoginController {
         SessionManager.getInstance().setUserRol(personal.getRol().getNombre());
 
         cargarEscena(Constantes.fxml_main, "comiData");
-
-//        if (personal.getRol().getNombre().equals("ADMINISTRADOR")){
-//
-//        } else if (personal.getRol().getNombre().equals("VENDEDOR")){
-//            //cargarEscena(Constantes.fxml_venta,"comiData - VENDEDOR");
-//        }
     }
 
     private void cargarEscena(String fxmlPath, String title) {
@@ -96,10 +93,6 @@ public class LoginController {
             Parent parent = fxmlLoader.load();
 
             Stage stage = StageManager.getPrimaryStage();
-/*            if (stage == null) {
-                stage = (Stage) btnLogin.getScene().getWindow();
-            }
-*/
             Scene scene = new Scene(parent);
             stage.setScene(scene);
             stage.getIcons().add(new Image(getClass().getResource(Constantes.ic_comidata).toExternalForm()));
@@ -114,18 +107,18 @@ public class LoginController {
     }
 
     private boolean validarCampos(String user, String pass) {
-        lblCorreoLogin.setVisible(false);
-        lblPasswordLogin.setVisible(false);
+        lblCorreoVacioLogin.setVisible(false);
+        lblPasswordVacioLogin.setVisible(false);
         lblErrorLogin.setVisible(false);
 
         boolean valid = true;
 
         if (user.isEmpty()) {
-            lblCorreoLogin.setVisible(true);
+            lblCorreoVacioLogin.setVisible(true);
             valid = false;
         }
         if (pass.isEmpty()) {
-            lblPasswordLogin.setVisible(true);
+            lblPasswordVacioLogin.setVisible(true);
             valid = false;
         }
         return valid;
@@ -133,5 +126,22 @@ public class LoginController {
 
     private void registrarUsuario() {
         System.out.println("Usuario registrado");
+    }
+
+    public void actualizarInterfazLogin() {
+        Properties properties = interfaceManager.getProperties();
+
+        lblTituloLogin.setText(properties.getProperty("login.label.titulo", "Iniciar Sesión"));
+        lblCorreoLogin.setText(properties.getProperty("login.label.correo", "Correo o usuario:"));
+        lblPasswordLogin.setText(properties.getProperty("login.label.clave", "Contraseña:"));
+        lblCorreoVacioLogin.setText(properties.getProperty("login.error.correo", "Campo necesario"));
+        lblPasswordVacioLogin.setText(properties.getProperty("login.error.clave", "Campo necesario"));
+        btnLogin.setText(properties.getProperty("login.button.entrar", "Entrar"));
+        lblRegister.setText(properties.getProperty("login.label.registro", "¿Aún no tienes cuenta? Regístrate"));
+        lblErrorLogin.setText(properties.getProperty("login.error.credenciales", "Credenciales incorrectas"));
+        txtCorreoLogin.setPromptText(properties.getProperty("login.placeholder.correo", "Ingrese su correo o usuario"));
+        txtPasswordLogin.setPromptText(properties.getProperty("login.placeholder.clave", "Ingrese su contraseña"));
+
+        aplicarLogoTema();
     }
 }

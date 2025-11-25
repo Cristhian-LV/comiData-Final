@@ -14,7 +14,7 @@ public class ProductosDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
-    private Long idProducto;
+        private Long idProducto;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -25,14 +25,16 @@ public class ProductosDB {
     @Column(name = "precio", nullable = false, precision = 10, scale = 2)
     private BigDecimal precio; // Precio de venta sugerido
 
+    @Column(name = "stock_actual", nullable = false)
+    private Integer stock;
+
     @ManyToOne
     @JoinColumn(name = "id_categoria", nullable = false)
     private CategoriaDB categoria;
 
     @ManyToOne
-    @JoinColumn(name = "id_promocion") // Puede ser nulo si no hay promoción
+    @JoinColumn(name = "id_promocion")
     private PromocionesDB promocion;
 
-    // Nota: El inventario se gestiona a través de la tabla InventarioDB (OneToOne/OneToMany)
-    // Para simplificar la relación, InventarioDB tendrá la FK a ProductosDB.
+    // Nota: El inventario se gestiona a través de la tabla InventarioDB (Histórico de movimientos)
 }

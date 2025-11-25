@@ -16,7 +16,7 @@ public class InterfaceManager {
     public void aplicarTema(Scene scene, boolean isLogin) {
         if (scene == null) return;
 
-        String tema = userPrefs.get(Constantes.key_tema, "Claro");
+        String tema = userPrefs.get(Constantes.key_tema, "claro");
         scene.getStylesheets().clear();
 
         String basePath = "/css/";
@@ -25,10 +25,10 @@ public class InterfaceManager {
 
         String themeSuffix;
         switch (tema) {
-            case "Oscuro": themeSuffix = "oscuro.css"; break;
-            case "Azul":   themeSuffix = "azul.css"; break;
-            case "Verde":  themeSuffix = "verde.css"; break;
-            case "Rosado": themeSuffix = "rosado.css"; break;
+            case "oscuro": themeSuffix = "oscuro.css"; break;
+            case "azul":   themeSuffix = "azul.css"; break;
+            case "verde":  themeSuffix = "verde.css"; break;
+            case "rosado": themeSuffix = "rosado.css"; break;
             default: themeSuffix = "claro.css"; break;
         }
 
@@ -44,14 +44,14 @@ public class InterfaceManager {
     public void aplicarLogoTema(ImageView logoImageView) {
         if (logoImageView == null) return;
 
-        String tema = userPrefs.get(Constantes.key_tema, "Claro");
+        String tema = userPrefs.get(Constantes.key_tema, "claro");
         String logoPath = Constantes.logo_comidata_white; // Default
 
         switch (tema) {
-            case "Oscuro": logoPath = Constantes.logo_comidata_black; break;
-            case "Azul":   logoPath = Constantes.logo_comidata_white; break;
-            case "Verde":  logoPath = Constantes.logo_comidata_white; break;
-            case "Rosado": logoPath = Constantes.logo_comidata_white; break;
+            case "oscuro": logoPath = Constantes.logo_comidata_black; break;
+            case "azul":   logoPath = Constantes.logo_comidata_white; break;
+            case "verde":  logoPath = Constantes.logo_comidata_white; break;
+            case "rosado": logoPath = Constantes.logo_comidata_white; break;
         }
 
         try {
@@ -69,8 +69,8 @@ public class InterfaceManager {
     public Properties cambiarIdioma(String idioma) {
         String langCode;
         switch (idioma) {
-            case "Ingles": langCode = "en"; break;
-            case "Frances": langCode = "fr"; break;
+            case "ingles": langCode = "en"; break;
+            case "frances": langCode = "fr"; break;
             default: langCode = "es"; break; // Español
         }
         userPrefs.put("IDIOMAX", langCode);

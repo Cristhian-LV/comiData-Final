@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 public class ModeloDataAutocomplet {
     String idx;
-    String nameDysplay;
-    String otherData;
+    String label;
+    String searchKey;
 
     @Override
     public String toString() {
-        return nameDysplay+" "+idx+" " + otherData;
+        return label +" "+idx+" " + searchKey;
     }
 }

@@ -1,7 +1,6 @@
 package pe.edu.upeu.comidata.controllers;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 import pe.edu.upeu.comidata.components.StageManager;
+import pe.edu.upeu.comidata.dto.SessionManager;
 import pe.edu.upeu.comidata.utils.Constantes;
 import pe.edu.upeu.comidata.utils.InterfaceManager;
 
@@ -25,56 +25,54 @@ public class MainController {
     @Autowired private ConfigurableApplicationContext applicationContext; // Contexto de Spring
     @Autowired private InterfaceManager interfaceManager;
 
-    @FXML private BorderPane bpAdminMain;
-    @FXML private MenuBar menuBarAdmin;
-    @FXML private TabPane tabPaneAdmin;
+    @FXML private BorderPane borderPaneMain;
+    @FXML private MenuBar menuBarMain;
+    @FXML private TabPane tabPaneMain;
 
-    private String userRole = Constantes.ROL_ADMINISTRADOR;
+    private String userRole;
 
     @FXML
     public void initialize() {
+
+        this.userRole = SessionManager.getInstance().getUserRol();
+        if (this.userRole == null || this.userRole.isEmpty()) {
+            // Fallback: si por alguna razón no se establece, asumimos el rol principal
+            this.userRole = Constantes.ROL_ADMINISTRADOR;
+        }
+
         crearMenuBar();
         actualizarInterfaz();
         Platform.runLater(() -> {
-            //cambiarEstilo(userPrefs.get(Constantes.key_tema, "Claro"));
-            interfaceManager.aplicarTema(bpAdminMain.getScene(),false);
+            interfaceManager.aplicarTema(borderPaneMain.getScene(),false);
         });
-        //abrirTabConFXML(Constantes.fxml_producto, "Gestionar Productos");
-//        abrirTabConFXML("/fxml/gestion_usuarios.fxml", "Gestionar Usuarios");
-//        abrirTabConFXML("/fxml/main_venta.fxml", "Gestionar Ventas");
-//        abrirTabConFXML("/fxml/gestion_productos.fxml", "Gestionar Productos");
-//        abrirTabConFXML("/fxml/main_reporte.fxml", "Reporte ventas");
+
+        // abrirTabConFXML(Constantes.fxml_producto, "Gestionar Productos");
+        // abrirTabConFXML("/fxml/main_reporte.fxml", "Reporte ventas");
     }
 
-// --- Configuración de Menús ---
-private void crearMenuBar() {
-    // Limpiamos los menús existentes (esencial para el cambio de idioma/rol)
-    menuBarAdmin.getMenus().clear();
+    // --- Configuración de Menús ---
+    private void crearMenuBar() {
+        menuBarMain.getMenus().clear();
 
-    // 1. Obtener los menús según el rol del usuario
-    List<Constantes.MenuStruct> menus = obtenerMenusPorRol(userRole);
-    Properties currentProperties = interfaceManager.getProperties();
+        List<Constantes.MenuStruct> menus = obtenerMenusPorRol(userRole);
+        Properties currentProperties = interfaceManager.getProperties();
 
-    // 2. Iterar sobre la estructura de menús
-    for (Constantes.MenuStruct menuStruct : menus) {
+        for (Constantes.MenuStruct menuStruct : menus) {
 
-        // Usar la clave de idioma para obtener el nombre del menú
-        String menuName = currentProperties.getProperty(menuStruct.key, "Missing Menu Name");
-        Menu menu = new Menu(menuName);
+            String menuName = currentProperties.getProperty(menuStruct.key, "Missing Menu Name");
+            Menu menu = new Menu(menuName);
 
-        if (menuStruct.items != null) {
-            // Menús normales con items definidos en la estructura
-            for (Constantes.MenuItemStruct itemStruct : menuStruct.items) {
-                crearMenuItemEstandar(menu, itemStruct, currentProperties);
+            if (menuStruct.items != null) {
+                for (Constantes.MenuItemStruct itemStruct : menuStruct.items) {
+                    crearMenuItemEstandar(menu, itemStruct, currentProperties);
+                }
+            } else if (menuStruct.key.equals("menu.nombre.ajustes")) {
+                crearMenuAjustes(menu);
             }
-        } else if (menuStruct.key.equals("menu.nombre.ajustes")) {
-            // Menú de Ajustes: Se generan submenús de Idioma y Tema (es la excepción)
-            crearMenuAjustes(menu);
+            menuBarMain.getMenus().add(menu);
         }
-
-        menuBarAdmin.getMenus().add(menu);
     }
-}
+
     private List<Constantes.MenuStruct> obtenerMenusPorRol(String rol) {
         switch (rol) {
             case Constantes.ROL_VENDEDOR:
@@ -88,11 +86,9 @@ private void crearMenuBar() {
     }
 
     private void crearMenuItemEstandar(Menu parentMenu, Constantes.MenuItemStruct itemStruct, Properties properties) {
-        // Usar la clave de idioma para obtener el nombre del MenuItem
         String itemName = properties.getProperty(itemStruct.key, "Missing Item Name");
         MenuItem mi = new MenuItem(itemName);
 
-        // Asignar una acción centralizada
         mi.setOnAction(e -> manejarAccionMenu(itemStruct));
         parentMenu.getItems().add(mi);
     }
@@ -100,50 +96,43 @@ private void crearMenuBar() {
     private void crearMenuAjustes(Menu menuAjustes) {
         Properties currentProperties = interfaceManager.getProperties();
 
-        // Submenú Idioma
         Menu mIdioma = new Menu(currentProperties.getProperty("menu.nombre.idioma"));
         for (String idioma: Constantes.miIdiomas){
-            MenuItem mi=new MenuItem(idioma);
+            MenuItem mi=new MenuItem(currentProperties.getProperty("idioma."+idioma));
             mi.setOnAction(actionEvent -> cambiarIdioma(idioma));
             mIdioma.getItems().add(mi);
         }
         menuAjustes.getItems().add(mIdioma);
 
-        // Submenú Tema
         Menu mTema = new Menu(currentProperties.getProperty("menu.nombre.tema"));
         for (String tema: Constantes.miTemas){
-            MenuItem mi=new MenuItem(tema);
+            MenuItem mi=new MenuItem(currentProperties.getProperty("tema."+tema));
             mi.setOnAction(actionEvent -> cambiarTema(tema));
             mTema.getItems().add(mi);
         }
         menuAjustes.getItems().add(mTema);
     }
 
-    // --- Manejo Centralizado de Acciones ---
-
     private void manejarAccionMenu(Constantes.MenuItemStruct itemStruct) {
-        // 1. Manejar acciones directas (Cerrar sesión, Salir, etc.)
+
         switch (itemStruct.actionKey) {
             case "CERRAR_SESION":
                 cerrarSesion();
-                return;
+                break;
             case "SALIR":
                 salirAplicacion();
-                return;
+                break;
+            case "GESTION_PRODUCTOS":
+                break;
             case "DATOS_USUARIO":
-                System.out.println("Abriendo datos de usuario");
-                return;
+                break;
             case "DATOS_NEGOCIO":
-                System.out.println("Abriendo datos del negocio");
-                return;
+                break;
             case "MANUAL_USUARIO":
-                System.out.println("Abriendo Manual de Usuario");
-                return;
+                break;
             case "ACERCA_DE":
-                System.out.println("Mostrando Acerca De");
-                return;
+                break;
             default:
-                // Continuar a la lógica de Tab
                 break;
         }
 
@@ -156,22 +145,20 @@ private void crearMenuBar() {
         }
     }
 
-    // --- Lógica de Interfaz ---
+//Lógica de Interfaz ---------------------------------------------------------------------------------
 
     private void cambiarTema(String tema) {
         interfaceManager.guardarTema(tema);
         // Aplicar el tema completo de la aplicación principal
-        interfaceManager.aplicarTema(bpAdminMain.getScene(), false);
+        interfaceManager.aplicarTema(borderPaneMain.getScene(), false);
     }
 
     private void cambiarIdioma(String idioma) {
         interfaceManager.cambiarIdioma(idioma);
-        actualizarInterfaz(); // Redibuja todos los textos
+        actualizarInterfaz();
     }
 
     private void actualizarInterfaz(){
-        // Al cambiar el idioma, recreamos completamente la MenuBar
-        // para que todos los textos se muestren en el idioma seleccionado.
         crearMenuBar();
     }
 
@@ -181,7 +168,7 @@ private void crearMenuBar() {
         try {
             Stage stage = StageManager.getPrimaryStage();
             if (stage == null) {
-                stage = (Stage) bpAdminMain.getScene().getWindow();
+                stage = (Stage) borderPaneMain.getScene().getWindow();
             }
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Constantes.fxml_login));
@@ -191,10 +178,9 @@ private void crearMenuBar() {
 
             LoginController loginController = fxmlLoader.getController();
 
-            // ¡IMPORTANTE! Usar TRUE para aplicar el CSS de Login (Solo fondo)
-            interfaceManager.aplicarTema(scene, false);
+            interfaceManager.aplicarTema(scene, false); //true para usar otro fondo en el login
 
-            loginController.aplicarLogoTema();
+            loginController.actualizarInterfazLogin();
 
             stage.setScene(scene);
             stage.setTitle("comiData - Login");
@@ -212,15 +198,15 @@ private void crearMenuBar() {
         System.exit(0);
     }
 
-    // El resto de los métodos como abrirTabConFXML se mantiene
     private void abrirTabConFXML(String fxmlPath, String tituloTab) {
         // Buscar si ya existe una pestaña con ese título
-        for (Tab tab : tabPaneAdmin.getTabs()) {
-            if (tab.getText().equals(tituloTab)) {
-                tabPaneAdmin.getSelectionModel().select(tab); // Seleccionar la existente
-                return; // Salir, no crear una nueva
-            }
-        }
+//        for (Tab tab : tabPaneMain.getTabs()) {
+//            if (tab.getText().equals(tituloTab)) {
+//                tabPaneMain.getSelectionModel().select(tab);
+//                return;
+//            }
+//        }
+        tabPaneMain.getTabs().clear();
         // Si no existe, crear la nueva pestaña
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -229,9 +215,10 @@ private void crearMenuBar() {
 
             Tab nuevaPestana = new Tab(tituloTab);
             nuevaPestana.setContent(root); // Añadir el contenido cargado
+            nuevaPestana.setClosable(false);
 
-            tabPaneAdmin.getTabs().add(nuevaPestana); // Añadir la nueva pestaña
-            tabPaneAdmin.getSelectionModel().select(nuevaPestana); // Seleccionarla
+            tabPaneMain.getTabs().add(nuevaPestana); // Añadir la nueva pestaña
+            tabPaneMain.getSelectionModel().select(nuevaPestana); // Seleccionarla
 
         } catch (IOException e) {
             e.printStackTrace();
